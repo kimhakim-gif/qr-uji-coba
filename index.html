@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QRCraft - Pembuat QR Code Modern & Minimalis</title>
+    <meta name="description" content="Buat QR code kustom dengan mudah. Gratis, cepat, dan desain modern.">
+    <meta name="keywords" content="QR generator, QR code, pembuat QR, minimalis, desain modern">
+    
+    <!-- Social Media Meta Tags -->
+    <meta property="og:title" content="QRCraft - Pembuat QR Code Modern">
+    <meta property="og:description" content="Alat pembuat QR Code yang kuat namun tetap minimalis.">
+    <meta name="twitter:title" content="QRCraft - Pembuat QR Code Modern">
+    <meta name="twitter:description" content="Alat pembuat QR Code yang kuat namun tetap minimalis.">
+
+    <script src="https://resource.trickle.so/vendor_lib/unpkg/react@18/umd/react.production.min.js"></script>
+    <script src="https://resource.trickle.so/vendor_lib/unpkg/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://resource.trickle.so/vendor_lib/unpkg/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://resource.trickle.so/vendor_lib/unpkg/lucide-static@0.516.0/font/lucide.css" rel="stylesheet">
+    
+    <!-- QR Code Library -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+
+    <style type="text/tailwindcss">
+    @layer theme {
+        :root {
+            --primary-color: #0f172a;
+            --secondary-color: #f8fafc;
+            --accent-color: #3b82f6;
+            --success-color: #22c55e;
+            --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+    }
+
+    @layer base {
+        body {
+            @apply bg-[var(--secondary-color)] text-[var(--primary-color)] antialiased;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+    }
+
+    @layer components {
+        .glass-card {
+            @apply bg-white/80 backdrop-blur-md border border-white/20 shadow-xl rounded-2xl;
+        }
+        .btn-primary {
+            @apply bg-[var(--primary-color)] text-white px-6 py-3 rounded-xl font-medium transition-all hover:opacity-90 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2;
+        }
+        .input-field {
+            @apply w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)] transition-all bg-white;
+        }
+    }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    <!-- Load scripts in order -->
+    <script type="text/babel" src="components/Navbar.js"></script>
+    <script type="text/babel" src="components/QRDisplay.js"></script>
+    <script type="text/babel" src="components/QRForm.js"></script>
+    <script type="text/babel" src="app.js"></script>
+</body>
+</html>
