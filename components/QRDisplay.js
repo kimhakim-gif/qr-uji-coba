@@ -1,48 +1,52 @@
 function QRDisplay({ data, options, loading }) {
-  const canvasRef = React.useRef(null);
-  const [mounted, setMounted] = React.useState(false);
+  const qrContainerRef = React.useRef(null);
 
   React.useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  React.useEffect(() => {
-    if (mounted && canvasRef.current && data) {
-      try {
-        const QRCodeLib = window.QRCode;
-        if (!QRCodeLib) {
-          console.error('QR Code library not found on window object');
-          return;
-        }
-
-        QRCodeLib.toCanvas(canvasRef.current, data, {
-          ...options,
-          width: 600, // Resolusi lebih tinggi untuk canvas internal, ditampilkan lebih kecil
-          margin: options.margin || 2
-        }, (error) => {
-          if (error) console.error('QR Render error:', error);
-        });
-      } catch (err) {
-        console.error('Failed to generate QR:', err);
-      }
+    if (!qrContainerRef.current || !data || !window.QRCode) {
+      return;
     }
-  }, [mounted, data, options]);
+
+    qrContainerRef.current.replaceChildren();
+    const errorLevel = window.QRCode.CorrectLevel[options.errorCorrectionLevel] || window.QRCode.CorrectLevel.M;
+    new window.QRCode(qrContainerRef.current, {
+      text: data,
+      width: 600,
+      height: 600,
+      colorDark: options.color?.dark || '#0f172a',
+      colorLight: options.color?.light || '#ffffff',
+      correctLevel: errorLevel
+    });
+  }, [data, options]);
 
   const handleDownload = (format) => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+    const canvas = qrContainerRef.current?.querySelector('canvas');
+    const image = qrContainerRef.current?.querySelector('img');
+    if (!canvas && !image) return;
 
-    const link = document.createElement('a');
-    link.download = `qrcraft-${Date.now()}.${format}`;
-    link.href = canvas.toDataURL(`image/${format}`);
-    link.click();
+    const download = (sourceCanvas) => {
+      const link = document.createElement('a');
+      link.download = `qrcraft-${Date.now()}.${format}`;
+      link.href = sourceCanvas.toDataURL(`image/${format}`);
+      link.click();
+    };
+
+    if (canvas) {
+      download(canvas);
+      return;
+    }
+
+    const downloadCanvas = document.createElement('canvas');
+    downloadCanvas.width = image.naturalWidth || 600;
+    downloadCanvas.height = image.naturalHeight || 600;
+    downloadCanvas.getContext('2d').drawImage(image, 0, 0);
+    download(downloadCanvas);
   };
 
   return (
     <div className="glass-card p-8 flex flex-col items-center gap-8 animate-in fade-in duration-500" data-name="qr-display" data-file="components/QRDisplay.js">
       <div className="relative group">
         <div className={`w-full max-w-[300px] aspect-square bg-white rounded-2xl overflow-hidden shadow-inner border border-gray-100 flex items-center justify-center transition-opacity duration-300 ${loading ? 'opacity-50' : 'opacity-100'}`}>
-          <canvas ref={canvasRef} className="w-full h-full object-contain p-4"></canvas>
+          <div ref={qrContainerRef} className="w-full h-full flex items-center justify-center p-4"></div>
           {loading && (
              <div className="absolute inset-0 flex items-center justify-center">
                 <div className="w-12 h-12 border-4 border-[var(--accent-color)] border-t-transparent rounded-full animate-spin"></div>
