@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import { QRCodeSVG } from 'qrcode.react';
 
-// Important: DO NOT remove this ErrorBoundary component.
+// 1. ErrorBoundary (Untuk menangkap error agar tidak jadi layar putih)
 class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
@@ -17,13 +17,13 @@ class ErrorBoundary extends React.Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
           <div className="text-center p-8 max-w-md bg-white rounded-xl shadow-lg">
             <h1 className="text-2xl font-bold text-gray-900 mb-4">Waduh, ada masalah!</h1>
-            <p className="text-gray-600 mb-6">Terjadi kesalahan tak terduga dalam aplikasi.</p>
+            <p className="text-gray-600 mb-6">Error: {this.state.error?.message}</p>
             <button
               onClick={() => window.location.reload()}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
             >
               Muat Ulang Halaman
             </button>
@@ -35,7 +35,7 @@ class ErrorBoundary extends React.Component {
   }
 }
 
-// Komponen Navbar Sederhana
+// 2. Komponen Navbar
 function Navbar() {
   return (
     <nav className="bg-white border-b border-gray-200 py-4">
@@ -46,7 +46,7 @@ function Navbar() {
   );
 }
 
-// Komponen Form Input
+// 3. Komponen Form Input
 function QRForm({ onGenerate }) {
   const [inputValue, setInputValue] = useState('https://trickle.so');
   const [color, setColor] = useState('#0f172a');
@@ -56,7 +56,6 @@ function QRForm({ onGenerate }) {
     e.preventDefault();
     onGenerate(inputValue, {
       color: { dark: color, light: bgColor },
-      margin: 4,
       width: 300,
       errorCorrectionLevel: 'M'
     });
@@ -91,7 +90,7 @@ function QRForm({ onGenerate }) {
   );
 }
 
-// Komponen Display QR Code (DIPERBAIKI: Menggunakan QRCodeSVG agar 100% aman di Vercel)
+// 4. Komponen Tampilan QR Code (Menggunakan SVG agar aman di Vercel)
 function QRDisplay({ data, options, loading }) {
   if (loading) {
     return (
@@ -104,7 +103,6 @@ function QRDisplay({ data, options, loading }) {
   return (
     <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100 flex flex-col items-center space-y-6">
       <div className="p-4 bg-white rounded-lg">
-        {/* QRCodeSVG tidak menggunakan Canvas, sehingga tidak akan error saat build di Vercel */}
         <QRCodeSVG
           value={data || 'https://trickle.so'}
           size={options?.width || 300}
@@ -117,7 +115,7 @@ function QRDisplay({ data, options, loading }) {
       <div className="text-center space-y-2 w-full">
         <p className="text-sm font-medium text-gray-900">Siap Digunakan</p>
         <p className="text-xs text-gray-500">Unduh QR code Anda sekarang</p>
-        <button
+        <button 
           onClick={() => {
             const svg = document.querySelector('svg');
             if (!svg) return;
@@ -146,6 +144,7 @@ function QRDisplay({ data, options, loading }) {
   );
 }
 
+// 5. Komponen Utama App
 function App() {
   const [qrData, setQrData] = useState('https://trickle.so');
   const [qrOptions, setQrOptions] = useState({
@@ -169,7 +168,7 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50" data-name="app-container" data-file="app.js">
+    <div className="min-h-screen bg-gray-50">
       <Navbar />
       <main className="container mx-auto px-4 py-12 md:py-20">
         <div className="max-w-6xl mx-auto flex flex-col lg:flex-row gap-8 items-start">
@@ -195,17 +194,23 @@ function App() {
         </div>
       </main>
       <footer className="mt-20 py-8 border-t border-gray-200 text-center text-gray-500 text-sm">
-        <p>&copy; {new Date().getFullYear()} QRCraft. Semua Hak Dilindungi.</p>
+        <p>&copy; {new Date().getFullYear()} QRCraft by Trickle. Semua Hak Dilindungi.</p>
       </footer>
     </div>
   );
 }
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-  <React.StrictMode>
-    <ErrorBoundary>
-      <App />
-    </ErrorBoundary>
-  </React.StrictMode>
-);
+// 6. Render ke dalam DOM
+const rootElement = document.getElementById('root');
+if (rootElement) {
+  const root = ReactDOM.createRoot(rootElement);
+  root.render(
+    <React.StrictMode>
+      <ErrorBoundary>
+        <App />
+      </ErrorBoundary>
+    </React.StrictMode>
+  );
+} else {
+  console.error("Elemen dengan id 'root' tidak ditemukan di index.html!");
+}
